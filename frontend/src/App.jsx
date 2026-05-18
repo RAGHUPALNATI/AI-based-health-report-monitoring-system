@@ -1,0 +1,131 @@
+import { useMemo, useState } from 'react'
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
+const defaultValues = JSON.stringify(
+  {
+    glucose: 180,
+    hemoglobin: 10.8,
+    wbc: 12200,
+  },
+  null,
+  2,
+)
+
+function App() {
+  const [text, setText] = useState(
+    'Patient reports chest pain, elevated glucose, and prescribed metformin. WBC remains high.',
+  )
+  const [values, setValues] = useState(defaultValues)
+  const [result, setResult] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const summaryHint = useMemo(
+    () => 'Paste a clinical note, lab report, or discharge summary to analyze it.',
+    [],
+  )
+
+  const analyzeReport = async (event) => {
+    event.preventDefault()
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, values: JSON.parse(values || '{}') }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`)
+      }
+
+      const data = await response.json()
+      setResult(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to analyze report')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="app-shell">
+      <main className="dashboard">
+        <section className="hero-card">
+          <div>
+            <p className="eyebrow">AI-based health report monitoring</p>
+            <h1>Surface clinical risks before they become critical.</h1>
+            <p className="hero-copy">
+              FastAPI powers the analysis engine, while React provides an interactive
+              triage dashboard for text, entities, summaries, and threshold alerts.
+            </p>
+          </div>
+          <div className="status-pill">{summaryHint}</div>
+        </section>
+
+        <section className="grid-layout">
+          <form className="panel editor-panel" onSubmit={analyzeReport}>
+            <label>
+              Clinical text
+              <textarea value={text} onChange={(event) => setText(event.target.value)} rows={8} />
+            </label>
+
+            <label>
+              Lab values JSON
+              <textarea value={values} onChange={(event) => setValues(event.target.value)} rows={8} />
+            </label>
+
+            <button type="submit" disabled={loading}>
+              {loading ? 'Analyzing...' : 'Run analysis'}
+            </button>
+
+            {error ? <p className="error-text">{error}</p> : null}
+          </form>
+
+          <aside className="panel result-panel">
+            <h2>Analysis result</h2>
+            {result ? (
+              <div className="result-stack">
+                <div>
+                  <h3>Summary</h3>
+                  <p>{result.summary}</p>
+                </div>
+
+                <div>
+                  <h3>Alerts</h3>
+                  {result.alerts.length ? (
+                    <ul>{result.alerts.map((alert) => <li key={alert}>{alert}</li>)}</ul>
+                  ) : (
+                    <p>No critical alerts triggered.</p>
+                  )}
+                </div>
+
+                <div>
+                  <h3>Extracted entities</h3>
+                  {result.entities.length ? (
+                    <ul>
+                      {result.entities.map((entity, index) => (
+                        <li key={`${entity.text}-${index}`}>
+                          {entity.text} - {entity.label}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No entities detected.</p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p className="muted-text">Run a report to see the extracted results here.</p>
+            )}
+          </aside>
+        </section>
+      </main>
+    </div>
+  )
+}
+
+export default App
