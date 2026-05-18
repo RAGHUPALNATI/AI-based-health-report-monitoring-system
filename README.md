@@ -1,4 +1,4 @@
-# AI-Based-Resume-Analyser
+# AI-based health report monitoring system
 
 AI-based health report monitoring system with a FastAPI backend and a React frontend.
 
