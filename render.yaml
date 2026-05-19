@@ -4,7 +4,7 @@ services:
     runtime: python
     pythonVersion: 3.11
     plan: free
-    buildCommand: pip install -r requirements.txt && python -m spacy download en_core_web_sm
+    buildCommand: pip install --only-binary :all: -r requirements.txt && python -m spacy download en_core_web_sm
     startCommand: gunicorn --bind 0.0.0.0:10000 --workers 2 --timeout 120 app:app
     envVars:
       - key: FLASK_ENV
