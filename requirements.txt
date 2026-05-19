@@ -10,8 +10,6 @@ flask
 flask-cors
 gunicorn
 joblib
-transformers
-torch
 scispacy
 datasets
 kaggle
