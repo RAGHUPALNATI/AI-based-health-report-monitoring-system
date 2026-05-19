@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: health-report-backend
+    runtime: python
+    pythonVersion: 3.11
+    plan: free
+    buildCommand: pip install -r requirements.txt && python -m spacy download en_core_web_sm
+    startCommand: gunicorn --bind 0.0.0.0:10000 --workers 2 --timeout 120 app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    healthCheckPath: /health
+    regions:
+      - oregon
+    autoDeploy: true
