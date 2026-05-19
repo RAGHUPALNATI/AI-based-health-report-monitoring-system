@@ -12,6 +12,13 @@ const defaultValues = JSON.stringify(
   2,
 )
 
+const LoadingSpinner = () => (
+  <div className="loading-spinner">
+    <div className="spinner"></div>
+    <p>Analyzing your report...</p>
+  </div>
+)
+
 function App() {
   const [text, setText] = useState(
     'Patient reports chest pain, elevated glucose, and prescribed metformin. WBC remains high.',
@@ -88,7 +95,14 @@ function App() {
             </label>
 
             <button type="submit" disabled={loading}>
-              {loading ? 'Analyzing...' : 'Run analysis'}
+              {loading ? (
+                <>
+                  <span className="button-spinner"></span>
+                  Analyzing...
+                </>
+              ) : (
+                'Run analysis'
+              )}
             </button>
 
             {error ? <p className="error-text">{error}</p> : null}
