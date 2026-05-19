@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const defaultValues = JSON.stringify(
   {
@@ -32,14 +32,23 @@ function App() {
     setError('')
 
     try {
+      let parsedValues = {}
+      try {
+        parsedValues = JSON.parse(values || '{}')
+      } catch {
+        throw new Error('Lab values must be valid JSON')
+      }
+
       const response = await fetch(`${API_BASE_URL}/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, values: JSON.parse(values || '{}') }),
+        body: JSON.stringify({ report_text: text, values: parsedValues }),
       })
 
       if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`)
+        const errorPayload = await response.json().catch(() => null)
+        const message = errorPayload?.error || `Request failed with status ${response.status}`
+        throw new Error(message)
       }
 
       const data = await response.json()
@@ -95,9 +104,31 @@ function App() {
                 </div>
 
                 <div>
+                  <h3>Classification</h3>
+                  <p>
+                    {result.classification?.label || 'unknown'}
+                    {' '}
+                    (
+                    {typeof result.classification?.confidence === 'number'
+                      ? `${(result.classification.confidence * 100).toFixed(1)}% confidence`
+                      : 'confidence unavailable'}
+                    )
+                  </p>
+                </div>
+
+                <div>
                   <h3>Alerts</h3>
-                  {result.alerts.length ? (
-                    <ul>{result.alerts.map((alert) => <li key={alert}>{alert}</li>)}</ul>
+                  {(result.alert_flags || []).length ? (
+                    <ul>
+                      {result.alert_flags.map((flag, index) => (
+                        <li key={`${flag.metric}-${index}`}>
+                          {flag.metric}: {flag.triggered ? 'triggered' : 'normal'}
+                          {typeof flag.value === 'number' ? ` (${flag.value})` : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (result.alerts || []).length ? (
+                    <ul>{result.alerts.map((alert, index) => <li key={`${alert}-${index}`}>{alert}</li>)}</ul>
                   ) : (
                     <p>No critical alerts triggered.</p>
                   )}
