@@ -1,10 +1,10 @@
 # AI-based health report monitoring system
 
-AI-based health report monitoring system with a FastAPI backend and a React frontend.
+AI-based health report monitoring system with a Flask backend and a React frontend.
 
 ## Project layout
 
-- `backend/`: FastAPI API entry point
+- `app.py`: Flask API entry point
 - `frontend/`: React + Vite dashboard
 - `src/`: preprocessing, NER, classification, summarization, and alerting modules
 - `train/`: training scripts for NER and classifier models
@@ -24,5 +24,5 @@ Kaggle is useful for fast prototyping, but it is usually not the best final sour
 ## Run order
 
 1. Run `./setup.sh`
-2. Start the FastAPI backend with `uvicorn backend.app:app --reload`
+2. Start the backend with `python app.py`
 3. Start the React frontend inside `frontend/` with `npm run dev`

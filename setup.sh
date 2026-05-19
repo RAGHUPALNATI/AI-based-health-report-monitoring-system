@@ -20,7 +20,7 @@ else
 fi
 
 mkdir -p \
-  "${ROOT_DIR}/data/raw" \
+  "${ROOT_DIR}/data/raw_reports" \
   "${ROOT_DIR}/data/annotated" \
   "${ROOT_DIR}/models/ner_model" \
   "${ROOT_DIR}/models/classifier" \
