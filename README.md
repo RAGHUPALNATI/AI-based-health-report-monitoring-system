@@ -1,6 +1,7 @@
-# AI-based health report monitoring system
+# AI-based Health Report Monitoring System
 
-AI-based health report monitoring system with a Flask backend and a React frontend.
+<!-- Deploy trigger -->
+This is a comprehensive system for analyzing and monitoring health reports using AI. It includes a Python backend with a machine learning pipeline and a React-based frontend.
 
 ## Project layout
 
