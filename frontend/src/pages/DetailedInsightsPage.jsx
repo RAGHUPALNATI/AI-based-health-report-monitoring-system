@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import hardcodedResult from '../data/hardcodedResult'
 
-const DetailedInsightsPage = ({ result, onBack }) => {
+const DetailedInsightsPage = ({ onBack }) => {
   const [activeLanguage, setActiveLanguage] = useState('en')
+  const result = hardcodedResult
 
   if (!result) {
     return <div className="detailed-insights">Loading...</div>
@@ -27,6 +29,22 @@ const DetailedInsightsPage = ({ result, onBack }) => {
   }
 
   const statusInfo = getStatusInfo()
+
+  const getSummaryText = () => {
+    if (typeof result.summary === 'string') {
+      return result.summary
+    }
+
+    return result.summary?.[activeLanguage] || result.summary?.en || 'Summary not available'
+  }
+
+  const getAlertText = (alert) => {
+    if (typeof alert === 'string') {
+      return alert
+    }
+
+    return alert?.message || alert?.text || 'Alert detected'
+  }
 
   const MODEL_INFO = [
     {
@@ -104,7 +122,7 @@ const DetailedInsightsPage = ({ result, onBack }) => {
           <div className="insight-card">
             <h2>📝 Clinical Summary ({languages.find(l => l.code === activeLanguage)?.name})</h2>
             <div className="summary-box">
-              {result.summary?.[activeLanguage] || result.summary?.en || 'Summary not available'}
+              {getSummaryText()}
             </div>
           </div>
 
@@ -170,7 +188,7 @@ const DetailedInsightsPage = ({ result, onBack }) => {
                 {result.alerts.map((alert, idx) => (
                   <li key={idx} className="alert-item">
                     <span className="alert-icon">🔔</span>
-                    <span className="alert-text">{alert}</span>
+                    <span className="alert-text">{getAlertText(alert)}</span>
                   </li>
                 ))}
               </ul>

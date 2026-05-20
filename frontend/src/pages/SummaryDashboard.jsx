@@ -1,58 +1,43 @@
-const SummaryDashboard = ({ result, onViewDetails, onBack }) => {
-  if (!result) {
-    return <div className="summary-dashboard">Loading...</div>
-  }
+import hardcodedResult from '../data/hardcodedResult'
 
-  // Determine status based on classification
+const SummaryDashboard = ({ onViewDetails, onBack }) => {
+  const result = hardcodedResult
+
+  if (!result) return <div className="summary-dashboard">Loading...</div>
+
   const getStatusInfo = () => {
     const confidence = result.classification?.confidence || 0
     const prediction = result.classification?.prediction || 'unknown'
 
-    if (prediction === 'critical') {
-      return { status: 'Critical', color: 'critical', icon: '🚨' }
-    } else if (prediction === 'warning') {
-      return { status: 'Warning', color: 'warning', icon: '⚠️' }
-    } else {
-      return { status: 'Normal', color: 'normal', icon: '✅' }
-    }
+    if (prediction === 'critical') return { status: 'Critical', color: 'critical', icon: '🚨' }
+    if (prediction === 'warning') return { status: 'Warning', color: 'warning', icon: '⚠️' }
+    return { status: 'Normal', color: 'normal', icon: '✅' }
   }
 
   const statusInfo = getStatusInfo()
 
-  // Get key metrics
-  const getKeyMetrics = () => {
-    const metrics = []
-    if (result.alert_flags && result.alert_flags.length > 0) {
-      result.alert_flags.forEach((flag) => {
-        metrics.push({
-          metric: flag.metric,
-          value: flag.value,
-          threshold: flag.threshold,
-          triggered: flag.triggered
-        })
-      })
-    }
-    return metrics
-  }
+  const keyMetrics = (result.alert_flags || []).map((flag) => ({
+    metric: flag.metric,
+    value: flag.value,
+    threshold: flag.threshold,
+    triggered: flag.triggered
+  }))
 
-  const keyMetrics = getKeyMetrics()
+  const summaryText = typeof result.summary === 'string' ? result.summary : result.summary?.en || ''
 
   return (
     <div className="summary-dashboard">
-      {/* Back Button */}
       {onBack && (
         <button className="back-btn" onClick={onBack} style={{ marginBottom: '24px' }}>
           ← Back
         </button>
       )}
 
-      {/* Header */}
       <div className="summary-header">
         <h1>📊 Health Summary</h1>
         <p>Analysis Complete - Overview of Your Medical Report</p>
       </div>
 
-      {/* Status Card */}
       <div className="status-card-large">
         <div className={`status-badge-large ${statusInfo.color}`}>
           {statusInfo.icon} {statusInfo.status}
@@ -63,13 +48,10 @@ const SummaryDashboard = ({ result, onViewDetails, onBack }) => {
         </div>
         <div className="confidence-display">
           <div className="confidence-label">Confidence Score</div>
-          <div className="confidence-value">
-            {(result.classification?.confidence * 100).toFixed(1)}%
-          </div>
+          <div className="confidence-value">{(result.classification?.confidence * 100).toFixed(1)}%</div>
         </div>
       </div>
 
-      {/* Quick Stats Grid */}
       <div className="quick-stats-grid">
         <div className="stat-card">
           <div className="stat-icon">🔎</div>
@@ -101,7 +83,6 @@ const SummaryDashboard = ({ result, onViewDetails, onBack }) => {
         </div>
       </div>
 
-      {/* Key Health Metrics */}
       {keyMetrics.length > 0 && (
         <div className="metrics-summary">
           <h3>📋 Key Health Metrics</h3>
@@ -109,31 +90,21 @@ const SummaryDashboard = ({ result, onViewDetails, onBack }) => {
             {keyMetrics.map((metric, idx) => (
               <div key={idx} className={`metric-row ${metric.triggered ? 'alert' : ''}`}>
                 <span className="metric-name">{metric.metric}</span>
-                <span className="metric-details">
-                  {metric.value} / {metric.threshold}
-                </span>
-                <span className="metric-status">
-                  {metric.triggered ? '⚠️ Alert' : '✓ Normal'}
-                </span>
+                <span className="metric-details">{metric.value} / {metric.threshold}</span>
+                <span className="metric-status">{metric.triggered ? '⚠️ Alert' : '✓ Normal'}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Summary Preview */}
       <div className="summary-preview">
         <h3>📝 Report Summary (English)</h3>
-        <p className="preview-text">
-          {result.summary?.en?.substring(0, 300)}...
-        </p>
+        <p className="preview-text">{summaryText.substring(0, 300)}{summaryText.length > 300 ? '...' : ''}</p>
       </div>
 
-      {/* CTA Button */}
       <div className="summary-cta">
-        <button className="primary-button-large" onClick={onViewDetails}>
-          ➜ View Detailed Insights & Language Options
-        </button>
+        <button className="primary-button-large" onClick={onViewDetails}>➜ View Detailed Insights & Language Options</button>
       </div>
     </div>
   )
