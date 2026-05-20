@@ -41,10 +41,12 @@
 :root {
   color-scheme: dark;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(35, 99, 235, 0.35), transparent 30%),
-    radial-gradient(circle at right, rgba(16, 185, 129, 0.22), transparent 28%),
-    linear-gradient(135deg, #07111f 0%, #0b1726 55%, #08111b 100%);
+  background-attachment: fixed;
+  background-image: url('https://images.unsplash.com/photo-1516321318423-f06f70504504?w=1920&h=1080&q=80&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #041725;
   color: #e5eef8;
 }
 
@@ -56,13 +58,8 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background-attachment: fixed;
-  background-image: url('https://images.unsplash.com/photo-1516321318423-f06f70504504?w=1920&h=1080&q=80&fit=crop');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #041725;
   overflow-x: hidden;
+  background: transparent;
 }
 
 html {
