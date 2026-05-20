@@ -57,9 +57,7 @@ body {
   padding: 0;
   min-height: 100vh;
   background-attachment: fixed;
-  background-image: 
-    linear-gradient(135deg, rgba(4, 17, 31, 0.15) 0%, rgba(15, 23, 42, 0.15) 100%),
-    url('https://images.unsplash.com/photo-1631217b585aa5f580fa0b3d5e321a30fcffb5f5?w=1920&q=90');
+  background-image: url('https://images.unsplash.com/photo-1631217b585aa5f580fa0b3d5e321a30fcffb5f5?w=2560&h=1440&q=80');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -94,7 +92,7 @@ html {
   width: 100%;
   margin: 0 auto;
   position: relative;
-  background: rgba(8, 15, 28, 0.3);
+  background: rgba(8, 15, 28, 0.15);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(125, 211, 252, 0.2);
@@ -135,7 +133,7 @@ html {
   padding: 60px 40px;
   text-align: center;
   cursor: pointer;
-  background: rgba(8, 15, 28, 0.8);
+  background: rgba(8, 15, 28, 0.15);
   backdrop-filter: blur(24px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
@@ -149,7 +147,7 @@ html {
 
 .upload-box:hover:not(.disabled) {
   border-color: rgba(125, 211, 252, 0.8);
-  background: rgba(8, 15, 28, 0.75);
+  background: rgba(8, 15, 28, 0.25);
   box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
   transform: translateY(-4px);
 }
@@ -323,7 +321,7 @@ html {
   margin-bottom: 32px;
   padding: 28px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(8, 15, 28, 0.25);
+  background: rgba(8, 15, 28, 0.15);
   backdrop-filter: blur(24px);
   border-radius: 24px;
   animation: slideInUp 0.4s ease-out;
@@ -501,7 +499,7 @@ html {
 .section {
   padding: 28px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(8, 15, 28, 0.25);
+  background: rgba(8, 15, 28, 0.15);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.05);
@@ -512,7 +510,7 @@ html {
 
 .section:hover {
   border-color: rgba(125, 211, 252, 0.3);
-  background: rgba(8, 15, 28, 0.35);
+  background: rgba(8, 15, 28, 0.25);
   box-shadow: 0 12px 48px rgba(59, 130, 246, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.08);
   transform: translateY(-2px);
 }
