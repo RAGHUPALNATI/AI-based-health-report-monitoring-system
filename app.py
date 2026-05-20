@@ -44,29 +44,38 @@ def after_request(response):
     return response
 
 @app.before_request
-def handle_preflight():
-    """Handle CORS preflight requests."""
+def handle_preflight_and_logging():
+    """Handle CORS preflight requests and log all requests."""
+    # Log all incoming requests
+    app.logger.info(f"[REQUEST] {request.method} {request.path} | Content-Type: {request.content_type}")
+    if request.method == 'POST' and 'file' in request.files:
+        app.logger.info(f"[FILE] Filename: {request.files['file'].filename}")
+    
+    # Handle CORS preflight requests
     if request.method == "OPTIONS":
         response = make_response()
-        response.headers.add("Access-Control-Allow-Origin", request.headers.get('Origin', '*'))
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        origin = request.headers.get('Origin', '*')
+        response.headers.add("Access-Control-Allow-Origin", origin)
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With")
         response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
         response.headers.add('Access-Control-Max-Age', '3600')
         return response, 200
-
-@app.before_request
-def log_request():
-    """Log all incoming requests for debugging."""
-    app.logger.info(f"[REQUEST] {request.method} {request.path} | Content-Type: {request.content_type}")
-    if request.method == 'POST':
-        if 'file' in request.files:
-            app.logger.info(f"[FILE] Filename: {request.files['file'].filename}")
 
 @app.get("/test")
 def test() -> Any:
     """Simple test endpoint to verify connection."""
     app.logger.info("Test endpoint called")
     return jsonify({"status": "ok", "message": "Connection test successful"}), 200
+
+@app.get("/cors-debug")
+def cors_debug() -> Any:
+    """Debug endpoint to show CORS headers."""
+    origin = request.headers.get('Origin', 'N/A')
+    return jsonify({
+        "status": "ok",
+        "request_origin": origin,
+        "message": "If this returns without CORS errors, CORS is working correctly"
+    }), 200
 
 ALERT_THRESHOLDS: Dict[str, float] = {
     "systolic_bp": 140.0,
