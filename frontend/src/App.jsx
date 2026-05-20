@@ -37,23 +37,34 @@ function App() {
       // Simulate some processing time for better UX
       await new Promise(resolve => setTimeout(resolve, 2000))
 
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
+      console.log('Fetching from:', `${API_BASE_URL}/analyze`)
       const response = await fetch(`${API_BASE_URL}/analyze`, {
         method: 'POST',
         body: formData,
+        signal: controller.signal
       })
 
+      clearTimeout(timeoutId)
+
+      console.log('Response status:', response.status)
+      
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Analysis failed')
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(errorData.error || `Server error: ${response.status}`)
       }
 
       const result = await response.json()
+      console.log('Analysis result:', result)
       setAnalysisResult(result)
       setCurrentPage('summary')
     } catch (err) {
-      setError(err.message)
-      console.error('Fetch URL:', `${API_BASE_URL}/analyze`);
-      console.error('Upload error:', err)
+      console.error('Full error:', err)
+      console.error('Fetch URL:', `${API_BASE_URL}/analyze`)
+      console.error('Error message:', err.message)
+      setError(err.message || 'Failed to fetch - please try again')
       setCurrentPage('upload')
     } finally {
       setLoading(false)

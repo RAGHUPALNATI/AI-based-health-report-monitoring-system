@@ -20,7 +20,18 @@ from src.preprocessor import preprocess_text
 from src.summarizer import summarize_text
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, 
+     resources={r"/*": {"origins": "*"}},
+     supports_credentials=True,
+     allow_headers=["Content-Type"],
+     methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"])
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    return response
 
 ALERT_THRESHOLDS: Dict[str, float] = {
     "systolic_bp": 140.0,
@@ -179,53 +190,105 @@ def health() -> Any:
 @app.post("/analyze")
 def analyze() -> Any:
     """Analyze a health report from text or uploaded file."""
+    # --- DEBUGGING: Temporarily bypass the full pipeline to test the connection ---
+    app.logger.info("--- DEBUG MODE: Bypassing NLP pipeline and returning dummy data. ---")
+    
+    # Ensure a file was actually uploaded to simulate a real request
+    if 'file' not in request.files:
+        return jsonify({"error": "File upload is required for this test."}), 400
+
+    dummy_summary = "This is a test summary. The patient's condition appears stable. Blood pressure is within normal limits. No acute distress noted."
+    
+    dummy_data = {
+        "entities": [
+            {"text": "Blood pressure", "label": "METRIC"},
+            {"text": "stable", "label": "CONDITION"}
+        ],
+        "summary": {
+            "en": dummy_summary,
+            "hi": "यह एक परीक्षण सारांश है।",
+            "kn": "ಇದು ಪರೀಕ್ಷಾ ಸಾರಾಂಶವಾಗಿದೆ.",
+            "te": "ఇది పరీక్ష సారాంశం."
+        },
+        "classification": {"prediction": "normal", "confidence": 0.99},
+        "alerts": [],
+        "alert_flags": [
+            {"metric": "systolic_bp", "value": 120, "threshold": 140, "triggered": False},
+            {"metric": "diastolic_bp", "value": 80, "threshold": 90, "triggered": False}
+        ]
+    }
+    import time
+    time.sleep(2) # Simulate processing time
+    return jsonify(dummy_data), 200
+
+    # --- ORIGINAL CODE DISABLED FOR DEBUGGING ---
+    """
     report_text = ""
     values = {}
 
     try:
+        app.logger.info("Received request to /analyze")
+
         # Handle file upload
         if 'file' in request.files:
             file = request.files['file']
             if file and file.filename:
+                app.logger.info(f"Processing uploaded file: {file.filename}")
                 report_text = _extract_text_from_file(file)
+                app.logger.info("Successfully extracted text from file.")
         else:
             # Handle JSON payload
             data = request.get_json()
             if data:
+                app.logger.info("Processing JSON payload.")
                 report_text = data.get("report_text") or data.get("text", "")
                 values = _coerce_numeric_values(data.get("values", {}))
 
         if not report_text or not report_text.strip():
+            app.logger.warning("Report text is missing from the request.")
             return jsonify({"error": "Report text is missing"}), 400
 
         # Run NLP pipeline
+        app.logger.info("Starting NLP pipeline...")
         processed_data = preprocess_text(report_text)
         cleaned_text = processed_data["normalized_text"]
+        app.logger.info("Text preprocessing complete.")
         
         entities = NER_EXTRACTOR.extract_entities(cleaned_text)
+        app.logger.info("NER extraction complete.")
         summary_en = summarize_text(cleaned_text, max_sentences=5)
+        app.logger.info("Summarization complete.")
         
-        # Translate summary
-        summary_hi = _translate_text(summary_en, "hi")
-        summary_kn = _translate_text(summary_en, "kn")
-        summary_te = _translate_text(summary_en, "te")
-        
-        summaries = {
-            "en": summary_en,
-            "hi": summary_hi,
-            "kn": summary_kn,
-            "te": summary_te,
-        }
+        # Translate summary with improved error handling
+        app.logger.info("Starting translation...")
+        summaries = {"en": summary_en}
+        try:
+            summaries["hi"] = _translate_text(summary_en, "hi")
+            summaries["kn"] = _translate_text(summary_en, "kn")
+            summaries["te"] = _translate_text(summary_en, "te")
+            app.logger.info("Translation successful.")
+        except Exception as e:
+            app.logger.error(f"Translation failed: {str(e)}", exc_info=True)
+            # Fallback to English for all languages if translation fails
+            summaries["hi"] = summary_en
+            summaries["kn"] = summary_en
+            summaries["te"] = summary_en
+            app.logger.warning("Fell back to English for all summaries due to translation error.")
 
         # Extract metrics and generate alerts
+        app.logger.info("Extracting metrics and generating alerts...")
         extracted_metrics = _extract_metric_values(cleaned_text)
         combined_metrics = {**extracted_metrics, **values}
         alert_messages = ALERT_ENGINE.generate_alerts(combined_metrics)
         alert_flags = _build_alert_flags(combined_metrics, alert_messages)
+        app.logger.info("Alert generation complete.")
 
         # Get classification
+        app.logger.info("Performing classification...")
         prediction, confidence = _classification_from_model(cleaned_text)
+        app.logger.info("Classification complete.")
 
+        app.logger.info("Analysis complete, returning response.")
         return jsonify(
             {
                 "entities": entities,
@@ -241,6 +304,7 @@ def analyze() -> Any:
     except Exception as e:
         app.logger.exception("Failed to analyze report")
         return jsonify({"error": "Failed to analyze report", "details": str(e)}), 500
+    """
 
 
 if __name__ == "__main__":
