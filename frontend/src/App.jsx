@@ -74,6 +74,9 @@ function App() {
 
       const data = await response.json()
       setAnalysisResult(normalizeAnalysisResult(data))
+      
+      // Wait 3-4 seconds before showing results for better UX
+      await new Promise(resolve => setTimeout(resolve, 3500))
       setCurrentPage('summary')
     } catch (err) {
       console.error('=== ERROR ===')
