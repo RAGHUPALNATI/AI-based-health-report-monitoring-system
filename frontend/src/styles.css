@@ -58,7 +58,7 @@ body {
   min-height: 100vh;
   background-attachment: fixed;
   background-image: 
-    linear-gradient(135deg, rgba(4, 17, 31, 0.75) 0%, rgba(15, 23, 42, 0.75) 100%),
+    linear-gradient(135deg, rgba(4, 17, 31, 0.4) 0%, rgba(15, 23, 42, 0.4) 100%),
     url('https://images.unsplash.com/photo-1576091160550-112173f31c77?w=1920&q=90');
   background-size: cover;
   background-position: center right;
@@ -81,24 +81,11 @@ html {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  background: transparent;
 }
 
 .app-shell::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    linear-gradient(135deg, rgba(4, 17, 31, 0.75) 0%, rgba(15, 23, 42, 0.75) 100%),
-    url('https://images.unsplash.com/photo-1576091160550-112173f31c77?w=1920&q=90');
-  background-attachment: fixed;
-  background-size: cover;
-  background-position: center right;
-  background-repeat: no-repeat;
-  pointer-events: none;
-  z-index: -1;
+  display: none;
 }
 
 /* Upload Page Styles */
