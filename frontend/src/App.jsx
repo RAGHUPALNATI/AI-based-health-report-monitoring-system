@@ -34,14 +34,20 @@ function App() {
     formData.append('file', file)
 
     try {
+      console.log('=== UPLOAD START ===')
+      console.log('API Base URL:', API_BASE_URL)
+      console.log('File:', file.name, file.type, file.size)
+      
       // Simulate some processing time for better UX
       await new Promise(resolve => setTimeout(resolve, 2000))
 
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
 
-      console.log('Fetching from:', `${API_BASE_URL}/analyze`)
-      const response = await fetch(`${API_BASE_URL}/analyze`, {
+      const analyzeUrl = `${API_BASE_URL}/analyze`
+      console.log('Fetching from:', analyzeUrl)
+      
+      const response = await fetch(analyzeUrl, {
         method: 'POST',
         body: formData,
         signal: controller.signal
@@ -49,21 +55,24 @@ function App() {
 
       clearTimeout(timeoutId)
 
-      console.log('Response status:', response.status)
+      console.log('Response received:', response.status, response.statusText)
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Error response:', errorData)
         throw new Error(errorData.error || `Server error: ${response.status}`)
       }
 
       const result = await response.json()
-      console.log('Analysis result:', result)
+      console.log('Analysis result received:', result)
       setAnalysisResult(result)
       setCurrentPage('summary')
     } catch (err) {
-      console.error('Full error:', err)
-      console.error('Fetch URL:', `${API_BASE_URL}/analyze`)
+      console.error('=== ERROR CAUGHT ===')
+      console.error('Error name:', err.name)
       console.error('Error message:', err.message)
+      console.error('Error stack:', err.stack)
+      console.error('Full error:', err)
       setError(err.message || 'Failed to fetch - please try again')
       setCurrentPage('upload')
     } finally {
