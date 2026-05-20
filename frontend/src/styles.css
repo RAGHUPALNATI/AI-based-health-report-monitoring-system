@@ -57,9 +57,7 @@ body {
   padding: 0;
   min-height: 100vh;
   background-attachment: fixed;
-  background-image: 
-    linear-gradient(135deg, rgba(10, 25, 41, 0.6) 0%, rgba(19, 47, 76, 0.6) 100%),
-    url('https://images.unsplash.com/photo-1516321318423-f06f70504504?w=1920&h=1080&q=80&fit=crop');
+  background-image: url('https://images.unsplash.com/photo-1516321318423-f06f70504504?w=1920&h=1080&q=80&fit=crop');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -95,9 +93,7 @@ html {
   margin: 0 auto;
   position: relative;
   background-color: #041725;
-  background-image: 
-    linear-gradient(135deg, rgba(4, 17, 31, 0.75) 0%, rgba(15, 23, 42, 0.75) 100%),
-    url('https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=1920&h=1080&q=80&fit=crop');
+  background-image: url('https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=1920&h=1080&q=80&fit=crop');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
