@@ -89,15 +89,18 @@ body {
   max-width: 900px;
   margin: 0 auto;
   position: relative;
+  background-color: #041725;
   background-attachment: fixed;
   background-image: 
-    linear-gradient(135deg, rgba(4, 17, 31, 0.75) 0%, rgba(15, 23, 42, 0.75) 100%),
-    url('https://images.unsplash.com/photo-1576091160550-112173f31c77?w=1920&q=90');
+    linear-gradient(135deg, rgba(4, 17, 31, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%),
+    url('https://images.unsplash.com/photo-1576091160550-112173f31c77?w=1920&q=90&auto=format&fit=crop');
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   border-radius: 24px;
   padding: 40px;
   backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .upload-header {
