@@ -52,6 +52,7 @@ function App() {
       setCurrentPage('summary')
     } catch (err) {
       setError(err.message)
+      console.error('Fetch URL:', `${API_BASE_URL}/analyze`);
       console.error('Upload error:', err)
       setCurrentPage('upload')
     } finally {
