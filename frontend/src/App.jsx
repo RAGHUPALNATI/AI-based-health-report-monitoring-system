@@ -53,19 +53,13 @@ function App() {
       // Simulate some processing time for better UX
       await new Promise(resolve => setTimeout(resolve, 2000))
 
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
-
       const analyzeUrl = `${API_BASE_URL}/analyze`
       console.log('Fetching from:', analyzeUrl)
       
       const response = await fetch(analyzeUrl, {
         method: 'POST',
-        body: formData,
-        signal: controller.signal
+        body: formData
       })
-
-      clearTimeout(timeoutId)
 
       console.log('Response received:', response.status, response.statusText)
       
@@ -83,8 +77,7 @@ function App() {
       console.error('=== ERROR CAUGHT ===')
       console.error('Error name:', err.name)
       console.error('Error message:', err.message)
-      console.error('Error stack:', err.stack)
-      console.error('Full error:', err)
+      console.error('Error:', err)
       setError(err.message || 'Failed to fetch - please try again')
       setCurrentPage('upload')
     } finally {
