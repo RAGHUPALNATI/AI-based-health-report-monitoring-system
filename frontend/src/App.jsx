@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './styles.css'
 import ModelInfoPage from './pages/ModelInfoPage'
 import UploadPage from './pages/UploadPage'
@@ -7,7 +7,19 @@ import SummaryDashboard from './pages/SummaryDashboard'
 import DetailedInsightsPage from './pages/DetailedInsightsPage'
 import DashboardPage from './pages/DashboardPage'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+// Determine API base URL based on environment
+let API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
+// If running in GitHub Codespaces, construct the proper URL
+if (typeof window !== 'undefined' && window.location.hostname.includes('.github.dev')) {
+  // Extract the Codespaces prefix (e.g., 'crispy-zebra-q74gg97g4wgh99g5')
+  const codespacesMatch = window.location.hostname.match(/^(.+?)-\d+\.app\.github\.dev$/)
+  if (codespacesMatch) {
+    const prefix = codespacesMatch[1]
+    API_BASE_URL = `https://${prefix}-5000.app.github.dev`
+    console.log('Codespaces environment detected. API URL:', API_BASE_URL)
+  }
+}
 
 function App() {
   const [currentPage, setCurrentPage] = useState('modelInfo')
