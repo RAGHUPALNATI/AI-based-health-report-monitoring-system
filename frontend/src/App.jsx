@@ -127,14 +127,13 @@ function App() {
 
       {currentPage === 'summary' && (
         <SummaryDashboard
-          result={analysisResult}
           onViewDetails={handleViewDetails}
           onBack={handleBackToProcessing}
         />
       )}
 
       {currentPage === 'detailedInsights' && (
-        <DetailedInsightsPage result={analysisResult} onBack={handleBackToSummary} />
+        <DetailedInsightsPage onBack={handleBackToSummary} />
       )}
     </div>
   )
