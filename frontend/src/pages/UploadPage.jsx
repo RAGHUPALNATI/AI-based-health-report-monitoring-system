@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function UploadPage({ onUpload, loading, error }) {
+export default function UploadPage({ onUpload, loading, error, onBack }) {
   const [dragActive, setDragActive] = useState(false)
 
   const handleDrag = (e) => {
@@ -38,8 +38,17 @@ export default function UploadPage({ onUpload, loading, error }) {
 
   return (
     <div className="upload-container">
+      {/* Top Navigation */}
+      <div className="upload-top-nav">
+        {onBack && (
+          <button className="back-nav-btn" onClick={onBack}>
+            ← Back to Models
+          </button>
+        )}
+      </div>
+
       <div className="upload-header">
-        <h1>Health Report Analyzer</h1>
+        <h1>📄 Upload Health Report</h1>
         <p className="subtitle">Upload your patient medical report for AI-powered analysis</p>
       </div>
 
@@ -57,7 +66,7 @@ export default function UploadPage({ onUpload, loading, error }) {
           </div>
         ) : (
           <>
-            <div className="upload-icon">📄</div>
+            <div className="upload-icon">📥</div>
             <h2>Drag & Drop Your Report</h2>
             <p>or</p>
             <label htmlFor="file-input" className="file-label">
