@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Tuple
 import fitz
 import joblib
 import translators as ts
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
 from sklearn.exceptions import NotFittedError
 
@@ -20,18 +20,39 @@ from src.preprocessor import preprocess_text
 from src.summarizer import summarize_text
 
 app = Flask(__name__)
+
+# Enhanced CORS configuration for all environments
 CORS(app, 
-     resources={r"/*": {"origins": "*"}},
-     supports_credentials=True,
-     allow_headers=["Content-Type"],
-     methods=["GET", "POST", "OPTIONS", "PUT", "DELETE"])
+     resources={r"/*": {
+         "origins": ["*"],
+         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+         "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
+         "expose_headers": ["Content-Type"],
+         "supports_credentials": True,
+         "max_age": 3600
+     }})
 
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    """Add CORS headers to every response."""
+    origin = request.headers.get('Origin', '*')
+    response.headers.add('Access-Control-Allow-Origin', origin if origin != '*' else '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Expose-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Max-Age', '3600')
     return response
+
+@app.before_request
+def handle_preflight():
+    """Handle CORS preflight requests."""
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", request.headers.get('Origin', '*'))
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+        response.headers.add("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS")
+        response.headers.add('Access-Control-Max-Age', '3600')
+        return response, 200
 
 @app.before_request
 def log_request():
