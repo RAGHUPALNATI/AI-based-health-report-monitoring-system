@@ -100,6 +100,16 @@ function App() {
     setFileName('')
   }
 
+  const handleBackToUpload = () => {
+    setCurrentPage('upload')
+    setAnalysisResult(null)
+    setError(null)
+  }
+
+  const handleBackToProcessing = () => {
+    setCurrentPage('processing')
+  }
+
   return (
     <div className="app-shell">
       {currentPage === 'modelInfo' && (
@@ -114,12 +124,13 @@ function App() {
         />
       )}
       {currentPage === 'processing' && (
-        <ProcessingPage fileName={fileName} />
+        <ProcessingPage fileName={fileName} onBack={handleBackToUpload} />
       )}
       {currentPage === 'summary' && (
         <SummaryDashboard 
           result={analysisResult} 
           onViewDetails={handleViewDetails}
+          onBack={handleBackToProcessing}
         />
       )}
       {currentPage === 'detailedInsights' && (

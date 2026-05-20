@@ -56,12 +56,8 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  background: linear-gradient(135deg, #0a1929 0%, #132f4c 25%, #0d1f3c 50%, #0a1929 75%, #051e34 100%);
   background-attachment: fixed;
-  background-image: url('https://images.unsplash.com/photo-1631217b585aa5f580fa0b3d5e321a30fcffb5f5?w=2560&h=1440&q=80');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-color: #041725;
   overflow-x: hidden;
 }
 

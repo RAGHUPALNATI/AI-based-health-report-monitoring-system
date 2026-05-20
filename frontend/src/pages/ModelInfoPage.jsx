@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const ModelInfoPage = ({ onStartUpload }) => {
+const ModelInfoPage = ({ onStartUpload, onBack }) => {
   const [activeTab, setActiveTab] = useState('models')
 
   const MODEL_INFO = [
@@ -58,6 +58,13 @@ const ModelInfoPage = ({ onStartUpload }) => {
 
   return (
     <div className="model-info-page">
+      {/* Back Button */}
+      {onBack && (
+        <button className="back-btn" onClick={onBack} style={{ marginBottom: '24px' }}>
+          ← Back
+        </button>
+      )}
+
       {/* Hero Section */}
       <div className="info-hero">
         <h1>🏥 AI Health Report Monitoring System</h1>

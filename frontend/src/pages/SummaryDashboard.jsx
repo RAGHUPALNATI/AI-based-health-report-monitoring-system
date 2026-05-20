@@ -1,4 +1,4 @@
-const SummaryDashboard = ({ result, onViewDetails }) => {
+const SummaryDashboard = ({ result, onViewDetails, onBack }) => {
   if (!result) {
     return <div className="summary-dashboard">Loading...</div>
   }
@@ -39,6 +39,13 @@ const SummaryDashboard = ({ result, onViewDetails }) => {
 
   return (
     <div className="summary-dashboard">
+      {/* Back Button */}
+      {onBack && (
+        <button className="back-btn" onClick={onBack} style={{ marginBottom: '24px' }}>
+          ← Back
+        </button>
+      )}
+
       {/* Header */}
       <div className="summary-header">
         <h1>📊 Health Summary</h1>

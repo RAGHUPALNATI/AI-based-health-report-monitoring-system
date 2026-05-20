@@ -1,4 +1,4 @@
-const ProcessingPage = ({ fileName }) => {
+const ProcessingPage = ({ fileName, onBack }) => {
   const steps = [
     {
       id: 'upload',
@@ -40,6 +40,13 @@ const ProcessingPage = ({ fileName }) => {
 
   return (
     <div className="processing-page">
+      {/* Back Button */}
+      {onBack && (
+        <button className="back-btn" onClick={onBack} style={{ marginBottom: '24px' }}>
+          ← Back
+        </button>
+      )}
+
       {/* Header */}
       <div className="processing-header">
         <h1>🔄 Analyzing Health Report</h1>
