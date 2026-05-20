@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './styles.css'
 import ModelInfoPage from './pages/ModelInfoPage'
 import UploadPage from './pages/UploadPage'
@@ -12,8 +12,8 @@ let API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 // If running in GitHub Codespaces, construct the proper URL
 if (typeof window !== 'undefined' && window.location.hostname.includes('.github.dev')) {
-  // Extract the Codespaces prefix (e.g., 'crispy-zebra-q74gg97g4wgh99g5')
   const codespacesMatch = window.location.hostname.match(/^(.+?)-\d+\.app\.github\.dev$/)
+
   if (codespacesMatch) {
     const prefix = codespacesMatch[1]
     API_BASE_URL = `https://${prefix}-5000.app.github.dev`
@@ -38,47 +38,119 @@ function App() {
     setFileName(file.name)
     setLoading(true)
     setError(null)
-    
+
     // Show processing page
     setCurrentPage('processing')
 
-    const formData = new FormData()
-    formData.append('file', file)
-
     try {
-      console.log('=== UPLOAD START ===')
-      console.log('API Base URL:', API_BASE_URL)
-      console.log('File:', file.name, file.type, file.size)
-      
-      // Simulate some processing time for better UX
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      console.log('=== MOCK AI ANALYSIS START ===')
 
-      const analyzeUrl = `${API_BASE_URL}/analyze`
-      console.log('Fetching from:', analyzeUrl)
-      
-      const response = await fetch(analyzeUrl, {
-        method: 'POST',
-        body: formData
-      })
+      // Simulate processing delay
+      await new Promise(resolve => setTimeout(resolve, 4000))
 
-      console.log('Response received:', response.status, response.statusText)
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
-        console.error('Error response:', errorData)
-        throw new Error(errorData.error || `Server error: ${response.status}`)
+      // MOCK RESULT BASED ON YOUR PDF REPORT
+      const mockResult = {
+        classification: {
+          prediction: 'warning',
+          confidence: 0.91
+        },
+
+        summary: {
+          en: 'Patient shows high diabetes risk, mild hypertension, possible anemia, and elevated cholesterol levels. Blood pressure and glucose levels are above normal range.',
+
+          hi: 'रोगी में मधुमेह का उच्च जोखिम, हल्का उच्च रक्तचाप, संभावित एनीमिया और उच्च कोलेस्ट्रॉल स्तर पाए गए हैं।',
+
+          kn: 'ರೋಗಿಯಲ್ಲಿ ಹೆಚ್ಚಿನ ಮಧುಮೇಹ ಅಪಾಯ, ಸೌಮ್ಯ ರಕ್ತದೊತ್ತಡ ಮತ್ತು ಹೆಚ್ಚಿನ ಕೊಲೆಸ್ಟ್ರಾಲ್ ಮಟ್ಟಗಳು ಕಂಡುಬಂದಿವೆ.',
+
+          te: 'రోగిలో అధిక మధుమేహ ప్రమాదం, తేలికపాటి రక్తపోటు మరియు అధిక కొలెస్ట్రాల్ స్థాయిలు గుర్తించబడ్డాయి.'
+        },
+
+        entities: [
+          {
+            text: 'Diabetes',
+            label: 'CONDITION'
+          },
+          {
+            text: 'Hypertension',
+            label: 'CONDITION'
+          },
+          {
+            text: 'Anemia',
+            label: 'CONDITION'
+          },
+          {
+            text: 'Cholesterol',
+            label: 'METRIC'
+          },
+          {
+            text: 'Glucose',
+            label: 'METRIC'
+          },
+          {
+            text: 'Hemoglobin',
+            label: 'METRIC'
+          }
+        ],
+
+        alerts: [
+          {
+            severity: 'high',
+            message: 'Blood glucose level critically elevated'
+          },
+          {
+            severity: 'medium',
+            message: 'Blood pressure above normal range'
+          },
+          {
+            severity: 'medium',
+            message: 'Hemoglobin below normal level'
+          }
+        ],
+
+        alert_flags: [
+          {
+            metric: 'systolic_bp',
+            value: 150,
+            threshold: 140,
+            triggered: true
+          },
+          {
+            metric: 'diastolic_bp',
+            value: 95,
+            threshold: 90,
+            triggered: true
+          },
+          {
+            metric: 'glucose',
+            value: 238,
+            threshold: 110,
+            triggered: true
+          },
+          {
+            metric: 'cholesterol',
+            value: 245,
+            threshold: 200,
+            triggered: true
+          },
+          {
+            metric: 'hemoglobin',
+            value: 8.9,
+            threshold: 13,
+            triggered: true
+          }
+        ]
       }
 
-      const result = await response.json()
-      console.log('Analysis result received:', result)
-      setAnalysisResult(result)
+      console.log('Mock analysis result:', mockResult)
+
+      setAnalysisResult(mockResult)
       setCurrentPage('summary')
+
     } catch (err) {
-      console.error('=== ERROR CAUGHT ===')
-      console.error('Error name:', err.name)
-      console.error('Error message:', err.message)
-      console.error('Error:', err)
-      setError(err.message || 'Failed to fetch - please try again')
+      console.error('=== ERROR ===')
+      console.error(err)
+
+      setError('Failed to process report')
       setCurrentPage('upload')
     } finally {
       setLoading(false)
@@ -115,27 +187,34 @@ function App() {
       {currentPage === 'modelInfo' && (
         <ModelInfoPage onStartUpload={handleStartUpload} />
       )}
+
       {currentPage === 'upload' && (
-        <UploadPage 
-          onUpload={handleFileUpload} 
-          loading={loading} 
+        <UploadPage
+          onUpload={handleFileUpload}
+          loading={loading}
           error={error}
           onBack={handleBackToModelInfo}
         />
       )}
+
       {currentPage === 'processing' && (
-        <ProcessingPage fileName={fileName} onBack={handleBackToUpload} />
+        <ProcessingPage
+          fileName={fileName}
+          onBack={handleBackToUpload}
+        />
       )}
+
       {currentPage === 'summary' && (
-        <SummaryDashboard 
-          result={analysisResult} 
+        <SummaryDashboard
+          result={analysisResult}
           onViewDetails={handleViewDetails}
           onBack={handleBackToProcessing}
         />
       )}
+
       {currentPage === 'detailedInsights' && (
-        <DetailedInsightsPage 
-          result={analysisResult} 
+        <DetailedInsightsPage
+          result={analysisResult}
           onBack={handleBackToSummary}
         />
       )}
